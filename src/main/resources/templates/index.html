@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Job Portal</title>
+</head>
+<body>
+
+<h1>Welcome to the Job Portal</h1>
+
+<!-- If user is authenticated, show logout button -->
+<div th:if="${#httpServletRequest.remoteUser}">
+    <p>Welcome, <span th:text="${#httpServletRequest.remoteUser}"></span>!</p>
+    <a href="/jobs">View Jobs</a> |
+    <a href="/jobs/post">Post a Job</a> |
+    <a href="/logout">Logout</a>
+</div>
+
+<!-- If user is NOT authenticated, show login and register links -->
+<div th:unless="${#httpServletRequest.remoteUser}">
+    <a href="/jobs">View Jobs</a> |
+    <a href="/login">Login</a>
+</div>
+
+</body>
+</html>
