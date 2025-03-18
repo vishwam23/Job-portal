@@ -1,6 +1,5 @@
 package com.vGrp.job_portal.controller;
 
-import ch.qos.logback.core.model.Model;
 import com.vGrp.job_portal.model.Job;
 import com.vGrp.job_portal.model.JobApplication;
 import com.vGrp.job_portal.repository.JobApplicationRepository;
@@ -13,78 +12,67 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/jobs")
 public class JobController {
 
     @Autowired
-    private JobRepository jobRepo;  // Ensures jobRepo is initialized
+    private JobRepository jobRepo;
 
     @Autowired
     private JobApplicationRepository jobAppRepo;
 
-    @GetMapping("/post")
-    public String showPostJobForm(ModelMap model) {
-        model.addAttribute("job", new Job());
-        return "post-job";
+    // List all jobs
+    @GetMapping("/")
+    public String listJobs(ModelMap model) {
+        List<Job> jobs = jobRepo.findAll();
+        model.addAttribute("jobs", jobs);
+        return "jobs";
     }
 
-    @PostMapping("/post")
-    public String postJob(@ModelAttribute Job job) {
-        jobRepo.save(job);
-        return "redirect:/jobs";
-    }
+    // Show job posting form (Only accessible if logged in)
     @GetMapping("/post")
     public String showPostJobForm(@AuthenticationPrincipal UserDetails user, ModelMap model) {
         if (user == null) {
-            return "redirect:/login";
+            return "redirect:/login"; // Prevent unauthorized access
         }
         model.addAttribute("job", new Job());
         return "post-job";
     }
-    @GetMapping("/")
-    public String listJobs(ModelMap model) {
-        List<Job> jobs = jobRepo.findAll();  // Fetch all jobs
-        model.addAttribute("jobs", jobs);   // Add to Thymeleaf model
-        return "jobs";  // Renders jobs.html
+
+    // Handle job posting
+    @PostMapping("/post")
+    public String postJob(@ModelAttribute Job job, @AuthenticationPrincipal UserDetails user) {
+        if (user == null) {
+            return "redirect:/login";
+        }
+        jobRepo.save(job);
+        return "redirect:/jobs/";
     }
+
+    // Show job application form
     @GetMapping("/apply/{id}")
     public String showApplyForm(@PathVariable Long id, ModelMap model) {
-        Job job = jobRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid Job ID"));
-        model.addAttribute("job", job);
+        Optional<Job> jobOptional = jobRepo.findById(id);
+        if (jobOptional.isEmpty()) {
+            return "error"; // Redirect to error page if job not found
+        }
+        model.addAttribute("job", jobOptional.get());
         model.addAttribute("jobApplication", new JobApplication());
         return "apply-job";
     }
 
-    // Handle Job Application Submission
+    // Handle job application submission
     @PostMapping("/apply/{id}")
     public String applyForJob(@PathVariable Long id, @ModelAttribute JobApplication jobApplication) {
-        Job job = jobRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid Job ID"));
-        jobApplication.setJob(job);
+        Optional<Job> jobOptional = jobRepo.findById(id);
+        if (jobOptional.isEmpty()) {
+            return "error"; // Redirect to error page if job not found
+        }
+        jobApplication.setJob(jobOptional.get());
         jobAppRepo.save(jobApplication);
         return "redirect:/jobs/";
     }
-
-    // Show Job Form
-    @GetMapping("/add")
-    public String showAddJobForm(ModelMap model) {
-        model.addAttribute("job", new Job()); // Empty job object for form
-        return "add-job"; // Thymeleaf template
-    }
-
-    // Handle Job Posting
-    @PostMapping("/add")
-    public String addJob(@ModelAttribute Job job) {
-        jobRepo.save(job); // Save job to database
-        return "redirect:/jobs/"; // Redirect to job listing page
-    }
-
-    @GetMapping("/post")
-    public String showJobPostForm(ModelMap model) {
-        model.addAttribute("job", new Job());  // Empty job object for form
-        return "post-job";  // Renders post-job.html
-    }
-
-
 }
