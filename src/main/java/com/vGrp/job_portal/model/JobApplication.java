@@ -10,6 +10,9 @@ public class JobApplication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Integer version;
+
     private String applicantName;
     private String email;
     private String resume; // Store resume text or URL

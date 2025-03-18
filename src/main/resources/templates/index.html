@@ -2,24 +2,53 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Job Portal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
 
-<h1>Welcome to the Job Portal</h1>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">Job Portal</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/jobs">Browse Jobs</a></li>
+                <li class="nav-item" th:if="${#httpServletRequest.remoteUser}">
+                    <a class="nav-link" href="/jobs/post">Post a Job</a>
+                </li>
+                <li class="nav-item" th:if="${#httpServletRequest.remoteUser}">
+                    <a class="nav-link btn btn-danger text-white" href="/logout">Logout</a>
+                </li>
+                <li class="nav-item" th:unless="${#httpServletRequest.remoteUser}">
+                    <a class="nav-link btn btn-primary text-white" href="/login">Login</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-<!-- If user is authenticated, show logout button -->
-<div th:if="${#httpServletRequest.remoteUser}">
-    <p>Welcome, <span th:text="${#httpServletRequest.remoteUser}"></span>!</p>
-    <a href="/jobs">View Jobs</a> |
-    <a href="/jobs/post">Post a Job</a> |
-    <a href="/logout">Logout</a>
+<!-- Hero Section -->
+<div class="container text-center mt-5">
+    <h1 class="display-4 fw-bold">Welcome to the Job Portal</h1>
+    <p class="lead">Find your dream job or post a job opening today!</p>
+
+    <div th:if="${#httpServletRequest.remoteUser}">
+        <h4>Welcome, <span class="text-primary" th:text="${#httpServletRequest.remoteUser}"></span>!</h4>
+        <a href="/jobs" class="btn btn-success btn-lg mt-3">View Jobs</a>
+        <a href="/jobs/post" class="btn btn-warning btn-lg mt-3">Post a Job</a>
+    </div>
+
+    <div th:unless="${#httpServletRequest.remoteUser}">
+        <a href="/jobs" class="btn btn-success btn-lg mt-3">Browse Jobs</a>
+        <a href="/login" class="btn btn-primary btn-lg mt-3">Login</a>
+    </div>
 </div>
 
-<!-- If user is NOT authenticated, show login and register links -->
-<div th:unless="${#httpServletRequest.remoteUser}">
-    <a href="/jobs">View Jobs</a> |
-    <a href="/login">Login</a>
-</div>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

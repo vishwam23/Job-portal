@@ -6,6 +6,7 @@ import com.vGrp.job_portal.repository.JobApplicationRepository;
 import com.vGrp.job_portal.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -64,15 +65,43 @@ public class JobController {
         return "apply-job";
     }
 
+
+
     // Handle job application submission
+//    @PostMapping("/apply/{id}")
+//    public String applyForJob(@PathVariable Long id, @ModelAttribute JobApplication jobApplication) {
+//        Optional<Job> jobOptional = jobRepo.findById(id);
+//        if (jobOptional.isEmpty()) {
+//            return "error"; // Redirect to error page if job not found
+//        }
+//        jobApplication.setJob(jobOptional.get());
+//        jobAppRepo.save(jobApplication);
+//        return "redirect:/jobs/";
+//    }
     @PostMapping("/apply/{id}")
-    public String applyForJob(@PathVariable Long id, @ModelAttribute JobApplication jobApplication) {
+    public String applyForJob(
+            @PathVariable Long id,
+            @RequestParam String applicantName,
+            @RequestParam String email,
+            @RequestParam String resume) {
+
         Optional<Job> jobOptional = jobRepo.findById(id);
         if (jobOptional.isEmpty()) {
             return "error"; // Redirect to error page if job not found
         }
-        jobApplication.setJob(jobOptional.get());
+
+        Job job = jobOptional.get();
+
+        // Create JobApplication object and save to DB
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setJob(job);
+        jobApplication.setApplicantName(applicantName);
+        jobApplication.setEmail(email);
+        jobApplication.setResume(resume);
+
         jobAppRepo.save(jobApplication);
+
         return "redirect:/jobs/";
     }
+
 }
