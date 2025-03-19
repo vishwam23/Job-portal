@@ -34,14 +34,16 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/register", "/css/**", "/js/**", "/images/**").permitAll()  // Allow homepage & assets
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/employer/**").hasRole("EMPLOYER")
-                        .requestMatchers("/jobs/**").authenticated()
+                        .requestMatchers("/jobs/**").authenticated()  // Jobs need authentication
                         .anyRequest().permitAll()
                 )
-                .userDetailsService(userDetailsService) // Load users from DB
+                .userDetailsService(userDetailsService) // Ensure user is loaded from DB
                 .formLogin(Customizer.withDefaults())
-                .logout(logout -> logout.logoutSuccessUrl("/"));
+                .logout(logout -> logout.logoutSuccessUrl("/"));  // Logout redirects to home
+
         return http.build();
     }
 }

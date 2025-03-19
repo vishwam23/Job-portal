@@ -6,7 +6,6 @@ import com.vGrp.job_portal.repository.JobApplicationRepository;
 import com.vGrp.job_portal.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -25,59 +24,47 @@ public class JobController {
     @Autowired
     private JobApplicationRepository jobAppRepo;
 
-    // List all jobs
-    @GetMapping("/")
+    // ✅ List all jobs (Fixed "/jobs/" issue)
+    @GetMapping
     public String listJobs(ModelMap model) {
         List<Job> jobs = jobRepo.findAll();
         model.addAttribute("jobs", jobs);
-        return "jobs";
+        return "jobs"; // Make sure "jobs.html" exists in /templates
     }
 
-    // Show job posting form (Only accessible if logged in)
+    // ✅ Show job posting form (Only accessible if logged in)
     @GetMapping("/post")
     public String showPostJobForm(@AuthenticationPrincipal UserDetails user, ModelMap model) {
         if (user == null) {
             return "redirect:/login"; // Prevent unauthorized access
         }
         model.addAttribute("job", new Job());
-        return "post-job";
+        return "post-job"; // Ensure "post-job.html" exists
     }
 
-    // Handle job posting
+    // ✅ Handle job posting (Fixed redirect)
     @PostMapping("/post")
     public String postJob(@ModelAttribute Job job, @AuthenticationPrincipal UserDetails user) {
         if (user == null) {
             return "redirect:/login";
         }
         jobRepo.save(job);
-        return "redirect:/jobs/";
+        return "redirect:/jobs"; // ✅ Corrected redirect
     }
 
-    // Show job application form
+    // ✅ Show job application form
     @GetMapping("/apply/{id}")
     public String showApplyForm(@PathVariable Long id, ModelMap model) {
         Optional<Job> jobOptional = jobRepo.findById(id);
         if (jobOptional.isEmpty()) {
-            return "error"; // Redirect to error page if job not found
+            return "redirect:/"; // ✅ Redirecting to home if job not found
         }
         model.addAttribute("job", jobOptional.get());
         model.addAttribute("jobApplication", new JobApplication());
-        return "apply-job";
+        return "apply-job"; // Ensure "apply-job.html" exists
     }
 
-
-
-    // Handle job application submission
-//    @PostMapping("/apply/{id}")
-//    public String applyForJob(@PathVariable Long id, @ModelAttribute JobApplication jobApplication) {
-//        Optional<Job> jobOptional = jobRepo.findById(id);
-//        if (jobOptional.isEmpty()) {
-//            return "error"; // Redirect to error page if job not found
-//        }
-//        jobApplication.setJob(jobOptional.get());
-//        jobAppRepo.save(jobApplication);
-//        return "redirect:/jobs/";
-//    }
+    // ✅ Handle job application submission (Fixed errors)
     @PostMapping("/apply/{id}")
     public String applyForJob(
             @PathVariable Long id,
@@ -87,12 +74,10 @@ public class JobController {
 
         Optional<Job> jobOptional = jobRepo.findById(id);
         if (jobOptional.isEmpty()) {
-            return "error"; // Redirect to error page if job not found
+            return "redirect:/"; // ✅ Redirect to home if job not found
         }
 
         Job job = jobOptional.get();
-
-        // Create JobApplication object and save to DB
         JobApplication jobApplication = new JobApplication();
         jobApplication.setJob(job);
         jobApplication.setApplicantName(applicantName);
@@ -100,8 +85,6 @@ public class JobController {
         jobApplication.setResume(resume);
 
         jobAppRepo.save(jobApplication);
-
-        return "redirect:/jobs/";
+        return "redirect:/jobs"; // ✅ Corrected redirect
     }
-
 }

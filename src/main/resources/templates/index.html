@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Portal</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
@@ -10,19 +12,24 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="/">Job Portal</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="/jobs">Browse Jobs</a></li>
-                <li class="nav-item" th:if="${#httpServletRequest.remoteUser}">
+
+                <!-- If user is logged in, show 'Post a Job' and 'Logout' -->
+                <li class="nav-item" th:if="${username}">
                     <a class="nav-link" href="/jobs/post">Post a Job</a>
                 </li>
-                <li class="nav-item" th:if="${#httpServletRequest.remoteUser}">
+                <li class="nav-item" th:if="${username}">
                     <a class="nav-link btn btn-danger text-white" href="/logout">Logout</a>
                 </li>
-                <li class="nav-item" th:unless="${#httpServletRequest.remoteUser}">
+
+                <!-- If user is not logged in, show 'Login' -->
+                <li class="nav-item" th:unless="${username}">
                     <a class="nav-link btn btn-primary text-white" href="/login">Login</a>
                 </li>
             </ul>
@@ -35,19 +42,20 @@
     <h1 class="display-4 fw-bold">Welcome to the Job Portal</h1>
     <p class="lead">Find your dream job or post a job opening today!</p>
 
-    <div th:if="${#httpServletRequest.remoteUser}">
-        <h4>Welcome, <span class="text-primary" th:text="${#httpServletRequest.remoteUser}"></span>!</h4>
+    <!-- Greeting based on login status -->
+    <div th:if="${username}">
+        <h4>Welcome, <span class="text-primary" th:text="${username}"></span>!</h4>
         <a href="/jobs" class="btn btn-success btn-lg mt-3">View Jobs</a>
         <a href="/jobs/post" class="btn btn-warning btn-lg mt-3">Post a Job</a>
     </div>
 
-    <div th:unless="${#httpServletRequest.remoteUser}">
+    <div th:unless="${username}">
         <a href="/jobs" class="btn btn-success btn-lg mt-3">Browse Jobs</a>
         <a href="/login" class="btn btn-primary btn-lg mt-3">Login</a>
     </div>
 </div>
 
-<!-- Bootstrap JS -->
+<!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
