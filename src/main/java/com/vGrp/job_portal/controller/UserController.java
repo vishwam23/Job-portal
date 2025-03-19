@@ -21,12 +21,12 @@ public class UserController {
 
     @GetMapping
     public String showRegisterForm(Model model) {
-        model.addAttribute("user", new User());
-        return "register"; // Create register.html form
+        model.addAttribute("user", new User());  // Make sure the User object has 'username'
+        return "register";
     }
 
     @PostMapping
-    public String registerUser(@ModelAttribute User user) {
+    public String registerUser(@ModelAttribute("user") User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword())); // Encrypt password
         userRepository.save(user);
         return "redirect:/login";

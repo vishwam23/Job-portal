@@ -28,9 +28,10 @@
                     <a class="nav-link btn btn-danger text-white" href="/logout">Logout</a>
                 </li>
 
-                <!-- If user is not logged in, show 'Login' -->
+                <!-- If user is not logged in, show 'Login' and 'Register' -->
                 <li class="nav-item" th:unless="${username}">
                     <a class="nav-link btn btn-primary text-white" href="/login">Login</a>
+                    <a class="nav-link btn btn-success text-white" href="/register">Register</a>
                 </li>
             </ul>
         </div>
@@ -52,6 +53,7 @@
     <div th:unless="${username}">
         <a href="/jobs" class="btn btn-success btn-lg mt-3">Browse Jobs</a>
         <a href="/login" class="btn btn-primary btn-lg mt-3">Login</a>
+        <a href="/register" class="btn btn-success btn-lg mt-3">Register</a>
     </div>
 </div>
 
