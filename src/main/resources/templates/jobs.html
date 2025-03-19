@@ -38,7 +38,18 @@
                     <h5 class="card-title" th:text="${job.title}"></h5>
                     <h6 class="card-subtitle text-muted" th:text="${job.company}"></h6>
                     <p class="card-text"><strong>Location:</strong> <span th:text="${job.location}"></span></p>
-                    <a th:href="@{/jobs/apply/{id}(id=${job.id})}" class="btn btn-primary">Apply Now</a>
+
+                    <!-- Show "Closed" Label if job is closed -->
+                    <p class="text-danger fw-bold" th:if="${job.closed}">Closed</p>
+
+                    <!-- Show "Apply Now" button only if job is open -->
+                    <a th:if="${!job.closed}" th:href="@{/jobs/apply/{id}(id=${job.id})}" class="btn btn-primary">Apply Now</a>
+
+                    <!-- Show "Close Job" button only if the logged-in user is the employer -->
+                    <form th:if="${loggedInUser != null and job.employer != null and job.employer.username == loggedInUser.username and !job.closed}"
+                          th:action="@{/jobs/close/{id}(id=${job.id})}" method="post">
+                        <button type="submit" class="btn btn-danger mt-2">Close Job</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -52,6 +63,7 @@
                 <th>Title</th>
                 <th>Company</th>
                 <th>Location</th>
+                <th>Status</th>
                 <th>Action</th>
             </tr>
             </thead>
@@ -60,7 +72,20 @@
                 <td th:text="${job.title}"></td>
                 <td th:text="${job.company}"></td>
                 <td th:text="${job.location}"></td>
-                <td><a th:href="@{/jobs/apply/{id}(id=${job.id})}" class="btn btn-success btn-sm">Apply</a></td>
+                <td>
+                    <span class="text-danger fw-bold" th:if="${job.closed}">Closed</span>
+                    <span class="text-success fw-bold" th:if="${!job.closed}">Open</span>
+                </td>
+                <td>
+                    <!-- Show "Apply" button only if job is open -->
+                    <a th:if="${!job.closed}" th:href="@{/jobs/apply/{id}(id=${job.id})}" class="btn btn-success btn-sm">Apply</a>
+
+                    <!-- Show "Close Job" button only if the logged-in user is the employer -->
+                    <form th:if="${loggedInUser != null and job.employer != null and job.employer.username == loggedInUser.username and !job.closed}"
+                          th:action="@{/jobs/close/{id}(id=${job.id})}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-sm">Close</button>
+                    </form>
+                </td>
             </tr>
             </tbody>
         </table>

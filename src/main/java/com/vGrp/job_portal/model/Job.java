@@ -24,5 +24,11 @@ public class Job {
     @ManyToOne
     private User employer;  // Job is posted by an Employer
 
+    // Getter & Setter for 'closed'
+    @Setter
+    @Getter
+    @Column(nullable = false)
+    private boolean closed = false; // Default: Job is open
+
     // Getters & Setters
 }

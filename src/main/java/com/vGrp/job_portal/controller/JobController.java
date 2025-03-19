@@ -24,6 +24,15 @@ public class JobController {
     @Autowired
     private JobApplicationRepository jobAppRepo;
 
+    public JobController(JobRepository jobRepository) {
+        this.jobRepo = jobRepository;
+    }
+
+    @PostMapping("/{id}/close")
+    public String closeJob(@PathVariable Long id) {
+        jobRepo.closeJob(id);
+        return "redirect:/jobs"; // Redirect to job listings
+    }
     // ✅ List all jobs (Fixed "/jobs/" issue)
     @GetMapping
     public String listJobs(ModelMap model) {
